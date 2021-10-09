@@ -303,6 +303,7 @@ class gui (threading.Thread, Frame):
       polled=canvas.create_text(600,630,fill="black",font="Arial 12 bold", text=channel.msg)         # current payload value
       canvas.create_text(600,670,fill="black",font="Arial 12 bold", text="Time elapsed in data packets")
       disptotal=canvas.create_text(600,690,fill="black",font="Arial 12 bold", text=channel.ttotal/10)    # total time
+      credit=canvas.create_text(500,780,fill="black",font="Arial 12 bold", text="Developed by raynesz.dev")
 
       while control[2]==0:
          canvas.itemconfig(dchannel, fill=colors[channel.state])                                    #--------MAIN LOOP GUI--------
@@ -369,3 +370,4 @@ stations[9].join()
 
 print ("Final Max Delay: "+str(primary_.max_delay/10))
 print ("Final Mean Delay: "+str(round(primary_.mean_delay/10,2)))       # print necessary values in the console
+input()
