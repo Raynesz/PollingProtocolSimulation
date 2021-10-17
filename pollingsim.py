@@ -160,11 +160,31 @@ class gui (threading.Thread, Frame):
       def finish():
          control[1]=1                     # bypasses all sleeps and leads to faster execution
       #print ("Starting " + self.name)
-
+         
       window = tkinter.Tk()
       window.title("Polling Protocol Simulation")        # window startup parameters
+      window.protocol("WM_DELETE_WINDOW", exit)
       window.geometry("1000x800+300+50")
-      canvas = tkinter.Canvas(window, width = 1000, height = 800)  #creating the 'Canvas' area
+      frame=Frame(window,width=1000,height=800)
+      frame.pack(expand=True, fill='both') #.grid(row=0,column=0)
+      canvas=tkinter.Canvas(frame,bg='#f1f1f1',width=1000,height=800,scrollregion=(0,0,1000,800))
+      hbar=tkinter.Scrollbar(frame,orient='horizontal')
+      hbar.pack(side='bottom',fill='x')
+      hbar.config(command=canvas.xview)
+      vbar=tkinter.Scrollbar(frame,orient='vertical')
+      vbar.pack(side='right',fill='y')
+      vbar.config(command=canvas.yview)
+      canvas.config(width=1000,height=800)
+      canvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
+      canvas.pack(side='left',expand=True,fill='both')
+      def _on_mousewheel(event):
+          shift = (event.state & 0x1) != 0
+          scroll = -1 if event.delta > 0 else 1
+          if shift:
+              canvas.xview_scroll(scroll, "units")
+          else:
+              canvas.yview_scroll(scroll, "units")
+      window.bind_all("<MouseWheel>", _on_mousewheel)
       
       def drawPrimaryStation(x,y):
          hh=80/2
@@ -266,9 +286,8 @@ class gui (threading.Thread, Frame):
          canvas.create_text(x,y,fill="red",font="Arial 12 bold", text="Final")
          finalms.append(canvas.create_text(x+10,y+20,fill="red",font="Arial 10 bold", text="Max Delay: "))
          finalms.append(canvas.create_text(x+10,y+40,fill="red",font="Arial 10 bold", text="Mean Delay: "))
-      tkinter.Button(window, text = "Close", command=exit).place(x=765, y=750) #exit button
       dchannel = canvas.create_line(250,40,250,750,width=10,fill="black")       # main channel
-      tkinter.Button(window, text = "Skip", command=finish).place(x=695, y=750) # button to bypass sleeps
+      tkinter.Button(frame, text = "Skip", command=finish).place(x=90, y=40) # button to bypass sleeps
       canvas.pack()
 
       my=10
@@ -303,7 +322,7 @@ class gui (threading.Thread, Frame):
       polled=canvas.create_text(600,630,fill="black",font="Arial 12 bold", text=channel.msg)         # current payload value
       canvas.create_text(600,670,fill="black",font="Arial 12 bold", text="Time elapsed in data packets")
       disptotal=canvas.create_text(600,690,fill="black",font="Arial 12 bold", text=channel.ttotal/10)    # total time
-      credit=canvas.create_text(500,780,fill="black",font="Arial 12 bold", text="Developed by raynesz.dev")
+      credit=canvas.create_text(110,20,fill="black",font="Arial 12 bold", text="Developed by raynesz.dev")
 
       while control[2]==0:
          canvas.itemconfig(dchannel, fill=colors[channel.state])                                    #--------MAIN LOOP GUI--------
